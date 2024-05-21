@@ -7,6 +7,8 @@ defmodule CrudElixirProject.Infrastructure.EntryPoint.ApiRest do
   alias CrudElixirProject.Infrastructure.EntryPoint.ClientRequestValidation
   alias CrudElixirProject.Domain.Model.Client
   alias CrudElixirProject.Domain.UseCases.Client.ClientUsecase
+  alias CrudElixirProject.Infrastructure.EntryPoint.SuccessHandler
+  alias CrudElixirProject.Infrastructure.EntryPoint.ErrorHandler
   require Logger
   use Plug.Router
   use Timex
@@ -42,11 +44,12 @@ defmodule CrudElixirProject.Infrastructure.EntryPoint.ApiRest do
            {:ok, true} <- ClientRequestValidation.validate_headers(headers),
            {:ok, client} <- Client.new(body),
            {:ok, uuid} <- ClientUsecase.register_client(client) do
-        build_response(uuid, conn)
+        SuccessHandler.build_response(uuid) |> build_response(conn)
       else
         error ->
           Logger.error("Error en controlador de registro #{inspect(error)}")
-          build_response("error", conn)
+          response = ErrorHandler.build_error_response(error)
+          build_response(%{status: 400, body: response}, conn)
       end
     rescue
       error ->
