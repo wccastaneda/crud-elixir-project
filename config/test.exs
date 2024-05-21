@@ -19,6 +19,9 @@ config :crud_elixir_project,
        redis_host: "localhost",
        redis_port: "6379"
 
+config :crud_elixir_project,
+       client_repository: CrudElixirProject.Infrastructure.DrivenAdapters.ClientCache
+
 config :logger,
   level: :info
 

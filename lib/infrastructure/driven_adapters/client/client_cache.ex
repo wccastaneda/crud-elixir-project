@@ -4,10 +4,17 @@ defmodule CrudElixirProject.Infrastructure.DrivenAdapters.ClientCache do
   @behaviour ClientRepositoryBehaviour
 
   def save_client(client) do
-    with encode_client <- Poison.encode(client),
+    with encoded_client <- encode_client(client),
          uuid <- UUID.uuid4() do
-      Redix.noreply_command(:redix, ["SET",uuid, encode_client]) |> extract_noreply(uuid)
+      Redix.noreply_command(:redix, ["SET", uuid, encoded_client]) |> extract_noreply(uuid)
          end
+  end
+
+  def encode_client(client) do
+    case Poison.encode(client) do
+      {:ok, encoded_client} -> encoded_client
+      {:error, reason} -> {:error, reason}
+    end
   end
 
   def extract_noreply(response, uuid) do

@@ -36,13 +36,13 @@ defmodule CrudElixirProject.Infrastructure.EntryPoint.ApiRest do
 
   post "/api/client/registration" do
     try do
-      with request <- conn.body_params |> IO.inspect() |> DataTypeUtils.normalize() |> IO.inspect(),
+      with request <- conn.body_params |> DataTypeUtils.normalize(),
            headers <-conn.req_headers |> DataTypeUtils.normalize_headers(),
            {:ok, body} <- ClientRequestValidation.validate_request_body(request),
            {:ok, true} <- ClientRequestValidation.validate_headers(headers),
            {:ok, client} <- Client.new(body),
-           {:ok, true} <- ClientUsecase.register_client(client) do
-        build_response("", conn)
+           {:ok, uuid} <- ClientUsecase.register_client(client) do
+        build_response(uuid, conn)
       else
         error ->
           Logger.error("Error en controlador de registro #{inspect(error)}")

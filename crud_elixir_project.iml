@@ -65,6 +65,7 @@
       <excludeFolder url="file://$MODULE_DIR$/logs" />
       <excludeFolder url="file://$MODULE_DIR$/_build/dev/lib/nimble_options" />
       <excludeFolder url="file://$MODULE_DIR$/_build/dev/lib/redix" />
+      <excludeFolder url="file://$MODULE_DIR$/_build/dev/lib/uuid" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="opentelemetry_plug" level="project" />
