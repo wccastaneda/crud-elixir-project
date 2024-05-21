@@ -59,6 +59,28 @@ defmodule CrudElixirProject.Infrastructure.EntryPoint.ApiRest do
   end
 
 
+  post "/api/client/getClient" do
+    try do
+      with request <- conn.body_params |> DataTypeUtils.normalize(),
+           headers <-conn.req_headers |> DataTypeUtils.normalize_headers(),
+           {:ok, body} <- ClientRequestValidation.validate_request_body(request),
+           {:ok, true} <- ClientRequestValidation.validate_headers(headers),
+           {:ok, client} <- ClientUsecase.get_client(body.clientUUID) do
+        SuccessHandler.build_get_response(client) |> build_response(conn)
+      else
+        error ->
+          Logger.error("Error en controlador de registro #{inspect(error)}")
+          response = ErrorHandler.build_error_response(error)
+          build_response(%{status: 400, body: response}, conn)
+      end
+    rescue
+      error ->
+        IO.inspect(error)
+        handle_error(error, conn)
+    end
+  end
+
+
   def build_response(%{status: status, body: body}, conn) do
     conn
     |> put_resp_content_type("application/json")

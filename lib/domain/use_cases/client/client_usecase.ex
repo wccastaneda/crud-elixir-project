@@ -10,7 +10,17 @@ defmodule CrudElixirProject.Domain.UseCases.Client.ClientUsecase do
       {:ok, uuid}
     else
       error ->
-        Logger.error("Error en caso de uso #{inspect(error)}")
+        Logger.error("Error en caso de uso RegisterClient #{inspect(error)}")
+        error
+    end
+  end
+
+  def get_client(uuid) do
+    with {:ok, client} <- @client_repository.get_client(uuid) do
+      {:ok, client}
+    else
+      error ->
+        Logger.error("Error en caso de uso GetClient #{inspect(error)}")
         error
     end
   end

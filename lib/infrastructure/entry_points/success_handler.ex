@@ -14,6 +14,18 @@ defmodule CrudElixirProject.Infrastructure.EntryPoint.SuccessHandler do
     }
   end
 
+  def build_get_response(client) do
+    %{
+      "meta" => %{
+        "messageId" => UUID.uuid4(),
+        "requestDate" => get_request_date()
+      },
+      "data" => [
+        client
+      ]
+    }
+  end
+
   defp get_request_date() do
     now = DateTime.utc_now() |> Timex.to_datetime("America/Bogota")
     "#{now.day}/#{now.month}/#{now.year} #{now.hour}:#{now.minute}:#{now.second}"
