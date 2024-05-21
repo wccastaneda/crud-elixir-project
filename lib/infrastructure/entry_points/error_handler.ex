@@ -18,6 +18,13 @@ defmodule CrudElixirProject.Infrastructure.EntryPoint.ErrorHandler do
     }
   end
 
+  defp map_error_response({:error, :client_not_exists}) do
+    %{
+      code: "ERROR-03",
+      detail: "El cliente no existe"
+    }
+  end
+
   defp map_error_response(_error) do
     %{
       code: "ERROR-NN",

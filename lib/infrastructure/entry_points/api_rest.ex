@@ -71,7 +71,7 @@ defmodule CrudElixirProject.Infrastructure.EntryPoint.ApiRest do
         error ->
           Logger.error("Error en controlador de registro #{inspect(error)}")
           response = ErrorHandler.build_error_response(error)
-          build_response(%{status: 400, body: response}, conn)
+          build_response(%{status: 404, body: response}, conn)
       end
     rescue
       error ->

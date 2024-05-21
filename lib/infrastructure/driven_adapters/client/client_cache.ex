@@ -11,11 +11,6 @@ defmodule CrudElixirProject.Infrastructure.DrivenAdapters.ClientCache do
          end
   end
 
-  def get_client(uuid) do
-    Redix.command(:redix, ["GET", uuid])
-    |> extract_get_result()
-  end
-
   def encode_client(client) do
     case Poison.encode(client) do
       {:ok, encoded_client} -> encoded_client
@@ -30,13 +25,26 @@ defmodule CrudElixirProject.Infrastructure.DrivenAdapters.ClientCache do
     end
   end
 
-  def extract_get_result(response) do
-    case response do
-      {:ok, nil} -> {:error, :client_not_exists}
-      {:ok, 0} -> {:error, :client_not_exists}
-      {:ok, response} -> {:ok, Poison.decode!(response) |> DataTypeUtils.normalize()}
-      other -> other
+  def get_client(uuid) do
+    with {:ok, response} <- extract_redix_get_result(uuid),
+         decoded_response <- decode_response(response),
+         normalized_response <- DataTypeUtils.normalize(decoded_response) do
+      {:ok, normalized_response}
     end
   end
 
+  def extract_redix_get_result(uuid) do
+    Redix.command(:redix, ["GET", uuid])
+    |>
+      case do
+        {:ok, nil} -> {:error, :client_not_exists}
+        {:ok, 0} -> {:error, :client_not_exists}
+        {:ok, response} -> {:ok, response}
+        other -> other
+      end
+  end
+
+  def decode_response(response) do
+    Poison.decode!(response)
+  end
 end
